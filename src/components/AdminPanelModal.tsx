@@ -13,7 +13,8 @@ export const AdminPanelModal: React.FC = () => {
     deleteProduct,
     orders,
     announcement,
-    updateAnnouncement
+    updateAnnouncement,
+    navigateTo
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<'products' | 'orders' | 'settings'>('products');
@@ -119,13 +120,26 @@ export const AdminPanelModal: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsAdminOpen(false)}
-              className="text-charcoal hover:text-botanical p-1"
-              aria-label="Close admin panel"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAdminOpen(false);
+                  navigateTo('admin');
+                }}
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#18351F] text-ivory-50 text-xs font-semibold rounded-lg hover:bg-[#234d2c] transition-colors"
+              >
+                <span>Full Admin Studio ↗</span>
+              </button>
+
+              <button
+                onClick={() => setIsAdminOpen(false)}
+                className="text-charcoal hover:text-botanical p-1"
+                aria-label="Close admin panel"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           </div>
 
           {/* Nav Tabs */}

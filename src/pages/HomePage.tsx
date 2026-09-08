@@ -15,13 +15,16 @@ import {
   ChevronRight,
   Sprout,
   Compass,
-  HeartHandshake
+  HeartHandshake,
+  Star
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { products, navigateTo, addToCart, farmers } = useStore();
+  const { products, navigateTo, addToCart, farmers, heroSlides, testimonials, blogs } = useStore();
 
   const [activeVideoModal, setActiveVideoModal] = useState(false);
+  const [slideVideoModalOpen, setSlideVideoModalOpen] = useState(false);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
@@ -30,17 +33,19 @@ export const HomePage: React.FC = () => {
   // 5 Curated Showcases (Section 19)
   const [activeShowcase, setActiveShowcase] = useState<'pure' | 'gems' | 'grains' | 'sweet' | 'daily'>('pure');
 
-  const thePureCollection = products.filter(p => ['prod-ghee-desi-cow', 'prod-sb-oil', 'prod-honey-wild', 'prod-himalayan-shilajit'].includes(p.id));
-  const himalayanGems = products.filter(p => ['prod-sb-oil', 'prod-sb-serum', 'prod-himalayan-gucchi', 'prod-himalayan-kesar'].includes(p.id));
-  const ancientGrains = products.filter(p => ['prod-grain-black-wheat', 'prod-grain-red-rice', 'prod-grain-buckwheat', 'prod-grain-ragi'].includes(p.id));
-  const naturesSweetness = products.filter(p => ['prod-honey-wild', 'prod-honey-mad', 'prod-fruit-apricot', 'prod-fruit-apples'].includes(p.id));
-  const dailyNourishment = products.filter(p => ['prod-ghee-desi-cow', 'prod-legume-green-peas', 'prod-grain-whole-wheat', 'prod-ghee-yak'].includes(p.id));
+  const publishedProducts = products.filter(p => p.status !== 'draft');
+
+  const thePureCollection = publishedProducts.filter(p => ['prod-ghee-desi-cow', 'prod-sb-oil', 'prod-honey-wild', 'prod-himalayan-shilajit'].includes(p.id));
+  const himalayanGems = publishedProducts.filter(p => ['prod-sb-oil', 'prod-sb-serum', 'prod-himalayan-gucchi', 'prod-himalayan-kesar'].includes(p.id));
+  const ancientGrains = publishedProducts.filter(p => ['prod-grain-black-wheat', 'prod-grain-red-rice', 'prod-grain-buckwheat', 'prod-grain-ragi'].includes(p.id));
+  const naturesSweetness = publishedProducts.filter(p => ['prod-honey-wild', 'prod-honey-mad', 'prod-fruit-apricot', 'prod-fruit-apples'].includes(p.id));
+  const dailyNourishment = publishedProducts.filter(p => ['prod-ghee-desi-cow', 'prod-legume-green-peas', 'prod-grain-whole-wheat', 'prod-ghee-yak'].includes(p.id));
 
   // Curated seasonal releases (newArrivals)
-  const newArrivals = products.filter(p => p.newArrival).slice(0, 4);
+  const newArrivals = publishedProducts.filter(p => p.newArrival).slice(0, 4);
 
   // Signature product (Desi Cow Ghee)
-  const signatureProduct = products.find(p => p.id === 'prod-ghee-desi-cow') || products[0];
+  const signatureProduct = publishedProducts.find(p => p.id === 'prod-ghee-desi-cow') || publishedProducts[0] || products[0];
 
   const categoriesData: { name: ProductCategory; image: string; tag: string; count: number }[] = [
     {
@@ -95,12 +100,33 @@ export const HomePage: React.FC = () => {
     }
   };
 
+  const publishedSlides = (heroSlides && heroSlides.length > 0)
+    ? heroSlides.filter(s => s.status === 'published').sort((a, b) => a.position - b.position)
+    : [];
+  const currentSlide = publishedSlides[activeSlideIndex] || publishedSlides[0];
+
+  const publishedTestimonials = (testimonials && testimonials.length > 0)
+    ? testimonials.filter(t => t.status === 'published')
+    : [];
+  const activeTestimonialsList = publishedTestimonials.length > 0
+    ? publishedTestimonials
+    : MOCK_TESTIMONIALS.map(m => ({
+        id: String(m.id),
+        author: m.author,
+        location: m.location,
+        rating: m.rating,
+        comment: m.comment,
+        date: m.date,
+        verified: true,
+        status: 'published' as const
+      }));
+
   const nextTestimonial = () => {
-    setTestimonialIndex(prev => (prev + 1) % MOCK_TESTIMONIALS.length);
+    setTestimonialIndex(prev => (prev + 1) % activeTestimonialsList.length);
   };
 
   const prevTestimonial = () => {
-    setTestimonialIndex(prev => (prev - 1 + MOCK_TESTIMONIALS.length) % MOCK_TESTIMONIALS.length);
+    setTestimonialIndex(prev => (prev - 1 + activeTestimonialsList.length) % activeTestimonialsList.length);
   };
 
   return (
@@ -113,8 +139,8 @@ export const HomePage: React.FC = () => {
         {/* Background cinematic image with subtle slow zoom */}
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=85"
-            alt="Untouched Himalayan landscape"
+            src={currentSlide?.image || "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=85"}
+            alt={currentSlide?.title || "Untouched Himalayan landscape"}
             className="w-full h-full object-cover object-center animate-slow-zoom filter brightness-[0.72]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#14261A] via-[#14261A]/40 to-black/30" />
@@ -139,51 +165,131 @@ export const HomePage: React.FC = () => {
             </div>
             <span className="w-1 h-1 rounded-full bg-[#B99A5A]"></span>
             <span className="text-[10px] sm:text-[11px] tracking-[0.24em] text-[#B99A5A] uppercase font-semibold">
-              AGE REVERSING
+              {currentSlide?.badgeText || "AGE REVERSING"}
             </span>
           </div>
 
           {/* Hero Heading: Cormorant Garamond 56–76px */}
           <h1 className="font-serif text-[46px] sm:text-[60px] md:text-[72px] lg:text-[78px] font-normal tracking-tight text-[#F8F6F0] leading-[1.08] mb-5 max-w-4xl mx-auto">
-            Nature, Preserved in Its Purest Form.
+            {currentSlide?.title || "Nature, Preserved in Its Purest Form."}
           </h1>
 
           {/* Slogan Treatment with Letter Spacing */}
-          <div className="mb-7">
-            <span className="font-sans text-[11px] sm:text-[13px] tracking-[0.32em] uppercase text-[#B99A5A] font-semibold border-y border-[#B99A5A]/30 py-1.5 px-6 inline-block">
-              AGE REVERSING
-            </span>
-          </div>
+          {currentSlide?.subtitle && (
+            <div className="mb-7">
+              <span className="font-sans text-[11px] sm:text-[13px] tracking-[0.32em] uppercase text-[#B99A5A] font-semibold border-y border-[#B99A5A]/30 py-1.5 px-6 inline-block">
+                {currentSlide.subtitle}
+              </span>
+            </div>
+          )}
 
           {/* Body Text: Manrope 16–18px */}
           <p className="text-[16px] sm:text-[17px] md:text-[18px] text-[#F8F6F0]/85 max-w-2xl mx-auto leading-relaxed font-light mb-10 font-sans">
-            Harvested from remote Himalayan valleys and ancestral family soils. Untouched by synthetic intervention, minimal in processing, and crafted in reverence to living vitality.
+            {currentSlide?.description || "Harvested from remote Himalayan valleys and ancestral family soils. Untouched by synthetic intervention, minimal in processing, and crafted in reverence to living vitality."}
           </p>
 
           {/* Buttons: Manrope 13–14px Medium */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 font-sans">
             <button
-              onClick={() => navigateTo('shop')}
+              onClick={() => {
+                const target = currentSlide?.buttonLink || 'shop';
+                if (typeof target === 'string' && (target.startsWith('http://') || target.startsWith('https://'))) {
+                  window.open(target, '_blank');
+                } else {
+                  navigateTo(target as any);
+                }
+              }}
               className="w-full sm:w-auto px-8 py-4 bg-[#18351F] hover:bg-[#667A5C] text-[#F8F6F0] text-[13px] sm:text-[14px] uppercase tracking-[0.16em] font-medium transition-all duration-300 flex items-center justify-center gap-3 border border-[#667A5C]/40 shadow-luxury"
             >
-              <span>Explore Our Collection</span>
+              <span>{currentSlide?.buttonText || "Explore Our Collection"}</span>
               <ArrowRight className="w-4 h-4 text-[#B99A5A]" />
             </button>
 
-            <button
-              onClick={() => navigateTo('farmers')}
-              className="w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-white/10 text-[#F8F6F0] text-[13px] sm:text-[14px] uppercase tracking-[0.16em] font-medium transition-all duration-300 border border-[#F8F6F0]/40"
-            >
-              Meet Our Farmers
-            </button>
+            {currentSlide?.secondaryButtonText && (
+              <button
+                onClick={() => {
+                  if (currentSlide.video) {
+                    setSlideVideoModalOpen(true);
+                  } else {
+                    const target = currentSlide.secondaryButtonLink || 'farmers';
+                    if (typeof target === 'string' && (target.startsWith('http://') || target.startsWith('https://'))) {
+                      window.open(target, '_blank');
+                    } else {
+                      navigateTo(target as any);
+                    }
+                  }
+                }}
+                className="w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-white/10 text-[#F8F6F0] text-[13px] sm:text-[14px] uppercase tracking-[0.16em] font-medium transition-all duration-300 border border-[#F8F6F0]/40 flex items-center justify-center gap-2"
+              >
+                {currentSlide.video && <Play className="w-3.5 h-3.5 fill-current text-[#B99A5A]" />}
+                <span>{currentSlide.secondaryButtonText}</span>
+              </button>
+            )}
           </div>
         </div>
 
+        {/* Carousel indicators if multiple published slides exist */}
+        {publishedSlides.length > 1 && (
+          <div className="absolute bottom-16 sm:bottom-12 left-0 right-0 z-20 px-6 sm:px-12 flex items-center justify-between max-w-7xl mx-auto pointer-events-none">
+            <div className="flex items-center gap-2 pointer-events-auto">
+              {publishedSlides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveSlideIndex(idx)}
+                  className={`h-2 transition-all rounded-full ${
+                    activeSlideIndex === idx ? 'w-8 bg-[#B99A5A]' : 'w-2 bg-white/40 hover:bg-white/70'
+                  }`}
+                  aria-label={`Slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 text-white pointer-events-auto">
+              <button
+                onClick={() => setActiveSlideIndex(prev => (prev - 1 + publishedSlides.length) % publishedSlides.length)}
+                className="p-2 rounded-full bg-black/40 hover:bg-black/70 border border-white/20 transition-colors"
+                aria-label="Previous Slide"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setActiveSlideIndex(prev => (prev + 1) % publishedSlides.length)}
+                className="p-2 rounded-full bg-black/40 hover:bg-black/70 border border-white/20 transition-colors"
+                aria-label="Next Slide"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Scroll indicator (Manrope 11-12px) */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center text-[#F8F6F0]/60 text-[11px] tracking-[0.2em] uppercase font-sans font-medium">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center text-[#F8F6F0]/60 text-[11px] tracking-[0.2em] uppercase font-sans font-medium">
           <span>Scroll to Discover</span>
           <ChevronDown className="w-4 h-4 animate-bounce mt-1 text-[#B99A5A]" />
         </div>
+
+        {/* Video Modal if slide has video */}
+        {slideVideoModalOpen && currentSlide?.video && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <div className="relative w-full max-w-4xl bg-stone-900 rounded-2xl overflow-hidden shadow-2xl border border-stone-700">
+              <div className="flex items-center justify-between p-4 bg-stone-950 border-b border-stone-800">
+                <h3 className="text-sm font-serif font-bold text-ivory-50">{currentSlide.title}</h3>
+                <button
+                  onClick={() => setSlideVideoModalOpen(false)}
+                  className="p-1.5 text-stone-400 hover:text-white rounded-full"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="aspect-video bg-black">
+                <video autoPlay controls className="w-full h-full object-cover" src={currentSlide.video}>
+                  Your browser does not support HTML5 video.
+                </video>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* =========================================================================
@@ -775,42 +881,66 @@ export const HomePage: React.FC = () => {
             Loved by People Who Choose Better
           </h2>
 
-          <div className="relative bg-[#FAF7F2] p-8 sm:p-14 border border-[#DDD2BF] shadow-luxury min-h-[260px] flex flex-col justify-between">
-            <p className="font-serif text-xl sm:text-2xl text-charcoal leading-relaxed italic max-w-3xl mx-auto">
-              {MOCK_TESTIMONIALS[testimonialIndex].comment}
-            </p>
-
-            <div className="mt-8 pt-6 border-t border-[#ECE3D5] flex items-center justify-between">
-              <div className="text-left">
-                <div className="font-bold text-xs text-charcoal">
-                  {MOCK_TESTIMONIALS[testimonialIndex].author}
+          {activeTestimonialsList.length > 0 && (() => {
+            const activeTestimonial = activeTestimonialsList[testimonialIndex % activeTestimonialsList.length];
+            return (
+              <div className="relative bg-[#FAF7F2] p-8 sm:p-14 border border-[#DDD2BF] shadow-luxury min-h-[260px] flex flex-col justify-between">
+                {/* Rating stars */}
+                <div className="flex items-center justify-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < (activeTestimonial.rating || 5)
+                          ? 'text-[#B99A5A] fill-[#B99A5A]'
+                          : 'text-stone-300'
+                      }`}
+                    />
+                  ))}
                 </div>
-                <div className="text-[11px] text-earth">
-                  {MOCK_TESTIMONIALS[testimonialIndex].location} · {MOCK_TESTIMONIALS[testimonialIndex].date}
+
+                <p className="font-serif text-xl sm:text-2xl text-charcoal leading-relaxed italic max-w-3xl mx-auto">
+                  “{activeTestimonial.comment}”
+                </p>
+
+                <div className="mt-8 pt-6 border-t border-[#ECE3D5] flex items-center justify-between">
+                  <div className="text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-charcoal">{activeTestimonial.author}</span>
+                      {activeTestimonial.verified && (
+                        <span className="text-[9px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-botanical/10 text-botanical border border-botanical/20">
+                          Verified Patron
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-earth mt-0.5">
+                      {activeTestimonial.location} {activeTestimonial.date ? `· ${activeTestimonial.date}` : ''}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={prevTestimonial}
+                      className="p-2 border border-[#D5C9B7] hover:bg-botanical hover:text-ivory-50 transition-colors"
+                      aria-label="Previous testimonial"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs text-charcoal-light font-medium px-1">
+                      {(testimonialIndex % activeTestimonialsList.length) + 1} / {activeTestimonialsList.length}
+                    </span>
+                    <button
+                      onClick={nextTestimonial}
+                      className="p-2 border border-[#D5C9B7] hover:bg-botanical hover:text-ivory-50 transition-colors"
+                      aria-label="Next testimonial"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={prevTestimonial}
-                  className="p-2 border border-[#D5C9B7] hover:bg-botanical hover:text-ivory-50 transition-colors"
-                  aria-label="Previous testimonial"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <span className="text-xs text-charcoal-light font-medium px-1">
-                  {testimonialIndex + 1} / {MOCK_TESTIMONIALS.length}
-                </span>
-                <button
-                  onClick={nextTestimonial}
-                  className="p-2 border border-[#D5C9B7] hover:bg-botanical hover:text-ivory-50 transition-colors"
-                  aria-label="Next testimonial"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       </section>
 
@@ -917,6 +1047,7 @@ export const HomePage: React.FC = () => {
       ========================================================================= */}
       <section id="journal-section" className="py-24 sm:py-32 bg-[#F6F1E7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Heading & Explore Journal CTA */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-4">
             <div>
               <span className="text-[10px] tracking-[0.25em] text-earth uppercase font-semibold block mb-2">
@@ -927,7 +1058,7 @@ export const HomePage: React.FC = () => {
               </h2>
             </div>
             <button
-              onClick={() => navigateTo('about')}
+              onClick={() => navigateTo('blog')}
               className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-botanical hover:text-earth transition-colors"
             >
               <span>Explore Journal</span>
@@ -935,71 +1066,82 @@ export const HomePage: React.FC = () => {
             </button>
           </div>
 
-          {/* 1 Large + 2 Small Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Large Featured Article */}
-            <div className="lg:col-span-7 bg-[#FAF7F2] border border-[#E3D8C6] shadow-sm flex flex-col justify-between overflow-hidden">
-              <div className="relative aspect-[16/10] overflow-hidden bg-charcoal">
-                <img
-                  src={MOCK_JOURNAL[0].image}
-                  alt={MOCK_JOURNAL[0].title}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                />
-              </div>
-              <div className="p-8 sm:p-10 space-y-4">
-                <div className="flex items-center justify-between text-[11px] text-earth uppercase font-semibold">
-                  <span>{MOCK_JOURNAL[0].category}</span>
-                  <span>{MOCK_JOURNAL[0].readTime} · {MOCK_JOURNAL[0].date}</span>
-                </div>
-                <h3 className="font-serif text-2xl sm:text-3xl text-botanical leading-snug">
-                  {MOCK_JOURNAL[0].title}
-                </h3>
-                <p className="text-xs sm:text-sm text-charcoal-light leading-relaxed">
-                  {MOCK_JOURNAL[0].excerpt}
-                </p>
-                <div className="pt-2 text-xs font-semibold text-botanical uppercase tracking-wider flex items-center gap-2">
-                  <span>Read Full Chronicle</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </div>
+          {(() => {
+            const publishedJournal = (blogs && blogs.length > 0 ? blogs : MOCK_JOURNAL).filter(b => b.status !== 'draft');
+            const mainArticle = publishedJournal.find(b => b.featured) || publishedJournal[0] || MOCK_JOURNAL[0];
+            const sideArticles = publishedJournal.filter(b => b.id !== mainArticle.id).slice(0, 2);
 
-            {/* 2 Smaller Articles */}
-            <div className="lg:col-span-5 flex flex-col gap-8">
-              {MOCK_JOURNAL.slice(1, 3).map(art => (
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Large Featured Article */}
                 <div
-                  key={art.id}
-                  className="bg-[#FAF7F2] border border-[#E3D8C6] shadow-sm flex flex-col sm:flex-row overflow-hidden flex-1"
+                  onClick={() => navigateTo('blog')}
+                  className="lg:col-span-7 bg-[#FAF7F2] border border-[#E3D8C6] shadow-sm flex flex-col justify-between overflow-hidden cursor-pointer group"
                 >
-                  <div className="sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden bg-charcoal">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-charcoal">
                     <img
-                      src={art.image}
-                      alt={art.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                      src={mainArticle.image}
+                      alt={mainArticle.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>
-                  <div className="sm:w-3/5 p-6 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between text-[10px] text-earth uppercase font-semibold mb-2">
-                        <span>{art.category}</span>
-                        <span>{art.readTime}</span>
-                      </div>
-                      <h4 className="font-serif text-lg text-botanical leading-snug mb-2 line-clamp-2">
-                        {art.title}
-                      </h4>
-                      <p className="text-xs text-charcoal-light line-clamp-2 leading-relaxed">
-                        {art.excerpt}
-                      </p>
+                  <div className="p-8 sm:p-10 space-y-4">
+                    <div className="flex items-center justify-between text-[11px] text-earth uppercase font-semibold">
+                      <span>{mainArticle.category}</span>
+                      <span>{mainArticle.readTime} · {mainArticle.date}</span>
                     </div>
-                    <div className="pt-3 text-[11px] font-semibold text-botanical uppercase tracking-wider flex items-center gap-1.5">
-                      <span>Read Story</span>
-                      <ArrowRight className="w-3 h-3" />
+                    <h3 className="font-serif text-2xl sm:text-3xl text-botanical leading-snug group-hover:text-earth transition-colors">
+                      {mainArticle.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-charcoal-light leading-relaxed">
+                      {mainArticle.excerpt}
+                    </p>
+                    <div className="pt-2 text-xs font-semibold text-botanical uppercase tracking-wider flex items-center gap-2">
+                      <span>Read Full Chronicle</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                {/* 2 Smaller Articles */}
+                <div className="lg:col-span-5 flex flex-col gap-8">
+                  {sideArticles.map(art => (
+                    <div
+                      key={art.id}
+                      onClick={() => navigateTo('blog')}
+                      className="bg-[#FAF7F2] border border-[#E3D8C6] shadow-sm flex flex-col sm:flex-row overflow-hidden flex-1 cursor-pointer group"
+                    >
+                      <div className="sm:w-2/5 aspect-[4/3] sm:aspect-auto overflow-hidden bg-charcoal">
+                        <img
+                          src={art.image}
+                          alt={art.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      </div>
+                      <div className="sm:w-3/5 p-6 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between text-[10px] text-earth uppercase font-semibold mb-2">
+                            <span>{art.category}</span>
+                            <span>{art.readTime}</span>
+                          </div>
+                          <h4 className="font-serif text-lg text-botanical leading-snug mb-2 line-clamp-2 group-hover:text-earth transition-colors">
+                            {art.title}
+                          </h4>
+                          <p className="text-xs text-charcoal-light line-clamp-2 leading-relaxed">
+                            {art.excerpt}
+                          </p>
+                        </div>
+                        <div className="pt-3 text-[11px] font-semibold text-botanical uppercase tracking-wider flex items-center gap-1.5">
+                          <span>Read Story</span>
+                          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 

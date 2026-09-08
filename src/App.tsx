@@ -8,6 +8,7 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { AboutPage } from './pages/AboutPage';
 import { FarmersPage } from './pages/FarmersPage';
 import { ContactPage } from './pages/ContactPage';
+import { BlogPage } from './pages/BlogPage';
 import { CartDrawer } from './components/CartDrawer';
 import { SearchModal } from './components/SearchModal';
 import { QuickViewModal } from './components/QuickViewModal';
@@ -16,8 +17,20 @@ import { AdminPanelModal } from './components/AdminPanelModal';
 import { ProductComparisonModal, CompareFloatingBar } from './components/ProductComparisonModal';
 import { Toast } from './components/Toast';
 
+import { AdminPage } from './pages/AdminPage';
+import { AdminLoginPage } from './components/admin/AdminLoginPage';
+
 const AppContent: React.FC = () => {
-  const { currentPage } = useStore();
+  const { currentPage, adminSession } = useStore();
+
+  if (currentPage === 'admin') {
+    return (
+      <div className="min-h-screen bg-[#F4EFE6] text-charcoal font-sans selection:bg-botanical selection:text-ivory-50">
+        {!adminSession ? <AdminLoginPage /> : <AdminPage />}
+        <Toast />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-charcoal font-sans selection:bg-botanical selection:text-ivory-50">
@@ -29,6 +42,7 @@ const AppContent: React.FC = () => {
         {currentPage === 'product-detail' && <ProductDetailPage />}
         {currentPage === 'about' && <AboutPage />}
         {currentPage === 'farmers' && <FarmersPage />}
+        {currentPage === 'blog' && <BlogPage />}
         {currentPage === 'contact' && <ContactPage />}
       </main>
 

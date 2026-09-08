@@ -23,6 +23,7 @@ export const ShopPage: React.FC = () => {
   const filteredProducts = useMemo(() => {
     return products
       .filter(p => {
+        if (p.status === 'draft') return false;
         if (activeCategory !== 'All' && p.category !== activeCategory) return false;
         return true;
       })
@@ -32,7 +33,7 @@ export const ShopPage: React.FC = () => {
         if (sortBy === 'rating') return b.rating - a.rating;
         if (sortBy === 'bestseller') return (b.bestseller ? 1 : 0) - (a.bestseller ? 1 : 0);
         if (sortBy === 'newest') return (b.newArrival ? 1 : 0) - (a.newArrival ? 1 : 0);
-        return 0; // featured default
+        return (a.position ?? 99) - (b.position ?? 99); // position / featured default
       });
   }, [products, activeCategory, sortBy]);
 
@@ -58,7 +59,9 @@ export const ShopPage: React.FC = () => {
         {/* Horizontal Category Filter Pills (Two Brothers style) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8 no-scrollbar">
           {categories.map(cat => {
-            const count = cat === 'All' ? products.length : products.filter(p => p.category === cat).length;
+            const count = cat === 'All'
+              ? products.filter(p => p.status !== 'draft').length
+              : products.filter(p => p.status !== 'draft' && p.category === cat).length;
             const isActive = activeCategory === cat;
             return (
               <button

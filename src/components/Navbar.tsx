@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
-import { Search, ShoppingBag, Heart, Menu, X, User, Shield, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { Search, ShoppingBag, Heart, Menu, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { ProductCategory } from '../types';
 
 export const Navbar: React.FC = () => {
@@ -12,7 +12,6 @@ export const Navbar: React.FC = () => {
     compareList,
     setIsCartOpen,
     setIsSearchOpen,
-    setIsAdminOpen,
     setIsCompareOpen,
     announcement
   } = useStore();
@@ -190,6 +189,18 @@ export const Navbar: React.FC = () => {
               </button>
 
               <button
+                onClick={() => handleNavClick('blog')}
+                className={`text-[14px] tracking-wider font-medium transition-colors hover:text-[#18351F] relative py-2 ${
+                  currentPage === 'blog' ? 'text-[#18351F] font-semibold' : 'text-[#20241F]/75'
+                }`}
+              >
+                Journal
+                {currentPage === 'blog' && (
+                  <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#18351F]"></span>
+                )}
+              </button>
+
+              <button
                 onClick={() => handleNavClick('contact')}
                 className={`text-[14px] tracking-wider font-medium transition-colors hover:text-[#18351F] relative py-2 ${
                   currentPage === 'contact' ? 'text-[#18351F] font-semibold' : 'text-[#20241F]/75'
@@ -229,16 +240,6 @@ export const Navbar: React.FC = () => {
                 </button>
               )}
 
-              {/* Account */}
-              <button
-                onClick={() => setIsAdminOpen(true)}
-                className="text-[#20241F] hover:text-[#18351F] transition-colors p-1.5 focus:outline-none flex items-center gap-1.5 text-xs font-medium"
-                aria-label="Account / Brand Manager"
-                title="Account / Brand Portal"
-              >
-                <User className="w-5 h-5 stroke-[1.5]" />
-                <span className="hidden xl:inline text-[13px] tracking-wider font-medium text-[#20241F]/80">Account</span>
-              </button>
 
               {/* Wishlist */}
               <button
@@ -369,20 +370,16 @@ export const Navbar: React.FC = () => {
                   Our Farmer
                 </button>
                 <button
+                  onClick={() => handleNavClick('blog')}
+                  className="block w-full text-left text-sm uppercase tracking-widest font-medium py-2 hover:text-botanical border-b border-[#F0E8DC]"
+                >
+                  Journal &amp; Research
+                </button>
+                <button
                   onClick={() => handleNavClick('contact')}
                   className="block w-full text-left text-sm uppercase tracking-widest font-medium py-2 hover:text-botanical border-b border-[#F0E8DC]"
                 >
                   Contact Us
-                </button>
-                <button
-                  onClick={() => {
-                    setIsAdminOpen(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="block w-full text-left text-xs uppercase tracking-widest font-medium py-2 text-earth hover:text-botanical flex items-center gap-2"
-                >
-                  <Shield className="w-4 h-4" />
-                  <span>Admin / Catalog Manager</span>
                 </button>
               </div>
             </div>

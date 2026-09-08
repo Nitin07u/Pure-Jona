@@ -4,7 +4,7 @@ import { ShieldCheck, Leaf, Award, Lock, ArrowUpRight } from 'lucide-react';
 import { ProductCategory } from '../types';
 
 export const Footer: React.FC = () => {
-  const { navigateTo, setIsAdminOpen } = useStore();
+  const { navigateTo } = useStore();
 
   const handleShopCategory = (cat: ProductCategory) => {
     navigateTo('shop', undefined, cat);
@@ -229,9 +229,8 @@ export const Footer: React.FC = () => {
               <li>
                 <button
                   onClick={() => {
-                    navigateTo('home');
-                    const el = document.getElementById('journal-section');
-                    el?.scrollIntoView({ behavior: 'smooth' });
+                    navigateTo('blog');
+                    scrollToTop();
                   }}
                   className="hover:text-gold transition-colors"
                 >
@@ -303,11 +302,15 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <button
-                  onClick={() => setIsAdminOpen(true)}
-                  className="hover:text-gold text-gold/80 transition-colors flex items-center gap-1 font-medium"
+                  onClick={() => {
+                    navigateTo('admin');
+                    scrollToTop();
+                  }}
+                  className="hover:text-gold text-gold/80 transition-colors flex items-center gap-1.5 font-medium"
                 >
-                  <span>Brand Manager Access</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <Lock className="w-3.5 h-3.5 text-gold" />
+                  <span>Admin Portal</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </button>
               </li>
             </ul>
@@ -336,6 +339,17 @@ export const Footer: React.FC = () => {
           <span className="hover:text-ivory-50 cursor-pointer">Terms &amp; Conditions</span>
           <span>·</span>
           <span className="hover:text-ivory-50 cursor-pointer">Shipping &amp; Returns</span>
+          <span>·</span>
+          <button
+            onClick={() => {
+              navigateTo('admin');
+              scrollToTop();
+            }}
+            className="hover:text-gold text-[#8C9C93] transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            <Lock className="w-3 h-3 text-gold/70" />
+            <span>Admin Portal</span>
+          </button>
         </div>
       </div>
     </footer>

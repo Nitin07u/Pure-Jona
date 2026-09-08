@@ -84,6 +84,50 @@ export interface Product extends RawProduct {
   bestseller?: boolean;
   newArrival?: boolean;
   certifications?: string[];
+  status?: 'draft' | 'published';
+  position?: number;
+  whyChooseHeading?: string;
+  whyChooseParagraphs?: string[];
+  whyChooseImage?: string;
+  video?: string;
+  slug?: string;
+}
+
+export type AdminTab = 'dashboard' | 'products' | 'hero-slides' | 'testimonials' | 'blogs' | 'orders' | 'settings';
+export type AdminProductMode = 'list' | 'create' | 'edit';
+export type AdminResourceMode = 'list' | 'create' | 'edit';
+
+export interface AdminSession {
+  email: string;
+  token: string;
+  loggedInAt: number;
+}
+
+export interface HeroSlide {
+  id: string;
+  title: string;
+  badgeText?: string;
+  subtitle: string;
+  description: string;
+  image: string;
+  video?: string;
+  buttonText: string;
+  buttonLink: PageRoute;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: PageRoute;
+  position: number;
+  status: 'published' | 'draft';
+}
+
+export interface TestimonialItem {
+  id: string;
+  author: string;
+  location: string;
+  rating: number;
+  date: string;
+  comment: string;
+  verified?: boolean;
+  status?: 'published' | 'draft';
 }
 
 export interface Review {
@@ -111,6 +155,7 @@ export interface Farmer {
 export interface JournalArticle {
   id: string;
   title: string;
+  slug?: string;
   excerpt: string;
   category: string;
   readTime: string;
@@ -118,6 +163,8 @@ export interface JournalArticle {
   image: string;
   author: string;
   content: string[];
+  status?: 'published' | 'draft';
+  featured?: boolean;
 }
 
 export interface CartItem {
@@ -148,7 +195,7 @@ export interface Order {
   status: 'Received' | 'Sourced from Farm' | 'Dispatched' | 'Delivered';
 }
 
-export type PageRoute = 'home' | 'shop' | 'product-detail' | 'about' | 'farmers' | 'contact' | 'admin';
+export type PageRoute = 'home' | 'shop' | 'product-detail' | 'about' | 'farmers' | 'contact' | 'blog' | 'admin';
 
 export interface FilterOptions {
   category: ProductCategory;
