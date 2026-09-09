@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { ProductCard } from '../components/ProductCard';
-import { ProductCategory } from '../types';
+import { CategorySection } from '../components/CategorySection';
 import { MOCK_TESTIMONIALS, MOCK_JOURNAL } from '../data/mockData';
 import {
   ArrowRight,
@@ -16,7 +16,12 @@ import {
   Sprout,
   Compass,
   HeartHandshake,
-  Star
+  Star,
+  Crown,
+  Mountain,
+  Wheat,
+  Droplets,
+  Sun
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -47,50 +52,6 @@ export const HomePage: React.FC = () => {
   // Signature product (Desi Cow Ghee)
   const signatureProduct = publishedProducts.find(p => p.id === 'prod-ghee-desi-cow') || publishedProducts[0] || products[0];
 
-  const categoriesData: { name: ProductCategory; image: string; tag: string; count: number }[] = [
-    {
-      name: 'Dairy',
-      image: 'https://images.unsplash.com/photo-1627483262268-9c2b5b2834b5?auto=format&fit=crop&w=800&q=80',
-      tag: 'A2 Desi Cow Bilona & Alpine Yak Ghee',
-      count: 2
-    },
-    {
-      name: 'Sea Buckthorn',
-      image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80',
-      tag: 'Cold-Pressed Oils, Juices, Herbal Teas & Serums',
-      count: 5
-    },
-    {
-      name: 'Fruits',
-      image: 'https://images.unsplash.com/photo-1595231776515-ddffb1f4eb73?auto=format&fit=crop&w=800&q=80',
-      tag: 'Wild Mountain Apricots & Cold-Desert Apples',
-      count: 2
-    },
-    {
-      name: 'Grains',
-      image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=800&q=80',
-      tag: 'Anthocyanin Black Wheat, Ragi & Buckwheat',
-      count: 4
-    },
-    {
-      name: 'Legumes',
-      image: 'https://images.unsplash.com/photo-1587735243615-c03f25aaff15?auto=format&fit=crop&w=800&q=80',
-      tag: 'Glacier-Fed High-Altitude Green Peas',
-      count: 1
-    },
-    {
-      name: 'Honey',
-      image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?auto=format&fit=crop&w=800&q=80',
-      tag: 'Raw Cliff Forest Honey & Rare Himalayan Mad Honey',
-      count: 2
-    },
-    {
-      name: 'Himalayan Specialties',
-      image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=800&q=80',
-      tag: 'Wild Morel Gucchi, Kashmiri Kesar & Shilajit Resin',
-      count: 3
-    }
-  ];
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -337,63 +298,9 @@ export const HomePage: React.FC = () => {
 
       {/* =========================================================================
           SECTION 3 — SHOP BY CATEGORY
-          Asymmetric editorial cards for 8 categories
+          Balanced Luxury Editorial Grid (7/5, 3/3/3/3, 12)
       ========================================================================= */}
-      <section className="py-24 sm:py-32 bg-[#F6F1E7]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
-            <div>
-              <span className="text-[10px] tracking-[0.25em] text-earth uppercase font-semibold block mb-2">
-                CURATED HARVESTS
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-botanical font-normal">
-                Explore Nature’s Finest
-              </h2>
-            </div>
-            <p className="text-xs sm:text-sm text-charcoal-light max-w-md font-sans">
-              Seven pure classifications cultivated across single-origin valleys, prepared with centuries-old artisanal care.
-            </p>
-          </div>
-
-          {/* Asymmetrical Editorial Grid for 7 Categories */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categoriesData.map((cat, idx) => (
-              <div
-                key={cat.name}
-                onClick={() => navigateTo('shop', undefined, cat.name)}
-                className={`group relative overflow-hidden bg-charcoal cursor-pointer shadow-sm hover:shadow-luxury transition-all duration-500 ${
-                  idx === 0 || idx === 6 ? 'sm:col-span-2 aspect-[16/10]' : 'aspect-[4/5]'
-                }`}
-              >
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter brightness-[0.8]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/30 to-transparent transition-opacity duration-300 group-hover:opacity-80" />
-
-                <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-end text-ivory-50">
-                  <span className="text-[10px] tracking-[0.2em] uppercase text-gold font-medium mb-1">
-                    Category {idx + 1} · {cat.count} {cat.count === 1 ? 'Product' : 'Products'}
-                  </span>
-                  <h3 className="font-serif text-2xl sm:text-3xl font-normal mb-1">
-                    {cat.name}
-                  </h3>
-                  <p className="text-xs text-ivory-200 font-light opacity-90 line-clamp-1 mb-3">
-                    {cat.tag}
-                  </p>
-
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ivory-50 font-semibold group-hover:text-gold transition-colors">
-                    <span>Explore Harvests</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CategorySection navigateTo={navigateTo} />
 
       {/* =========================================================================
           SECTION 4 — 5 CURATED HOMEPAGE SHOWCASES
@@ -420,31 +327,203 @@ export const HomePage: React.FC = () => {
             </button>
           </div>
 
-          {/* Curated Showcase Tabs */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 border-b border-[#DFD6C7] pb-4 mb-10 text-xs font-semibold uppercase tracking-wider">
-            {[
-              { id: 'pure', title: 'The Pure Collection', subtitle: 'Signature Masterpieces' },
-              { id: 'gems', title: 'Himalayan Gems', subtitle: 'Rare High-Altitude Botanicals' },
-              { id: 'grains', title: 'Ancient Grains', subtitle: 'Low-GI & Ancestral Nutrition' },
-              { id: 'sweet', title: 'Nature’s Sweetness', subtitle: 'Raw Honeys & Wild Fruits' },
-              { id: 'daily', title: 'Daily Nourishment', subtitle: 'Pillars of Everyday Vitality' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveShowcase(tab.id as any)}
-                className={`px-4 py-2.5 transition-all text-left flex flex-col ${
-                  activeShowcase === tab.id
-                    ? 'bg-botanical text-ivory-50 shadow-sm border border-botanical'
-                    : 'bg-[#F4ECE0] text-charcoal border border-[#E5DAC7] hover:bg-[#EAE0CE]'
-                }`}
-              >
-                <span className="text-xs">{tab.title}</span>
-                <span className={`text-[10px] tracking-normal font-normal opacity-80 ${activeShowcase === tab.id ? 'text-gold' : 'text-charcoal-light'}`}>
-                  {tab.subtitle}
-                </span>
-              </button>
-            ))}
-          </div>
+          {/* Curated Showcase Collection Deck */}
+          {(() => {
+            const showcaseTabs = [
+              {
+                id: 'pure' as const,
+                num: '01',
+                roman: 'I',
+                title: 'The Pure Collection',
+                subtitle: 'Signature Masterpieces',
+                tagline: 'Our premier biological treasures, revered across generations for unmatched cellular potency and absolute purity.',
+                badge: 'Certified Gold Standard',
+                icon: Crown,
+                count: thePureCollection.length
+              },
+              {
+                id: 'gems' as const,
+                num: '02',
+                roman: 'II',
+                title: 'Himalayan Gems',
+                subtitle: 'Rare High-Altitude Botanicals',
+                tagline: 'Hand-harvested at 10,000+ ft glacial elevations where intense solar UV stimulates maximum antioxidant density.',
+                badge: 'High-Altitude Glacial Harvest',
+                icon: Mountain,
+                count: himalayanGems.length
+              },
+              {
+                id: 'grains' as const,
+                num: '03',
+                roman: 'III',
+                title: 'Ancient Grains',
+                subtitle: 'Low-GI & Ancestral Nutrition',
+                tagline: 'Unhybridized heirloom grains cold stone-milled to safeguard living enzymes, low glycemic balance, and prebiotic fiber.',
+                badge: 'Stone-Milled Heritage Heirloom',
+                icon: Wheat,
+                count: ancientGrains.length
+              },
+              {
+                id: 'sweet' as const,
+                num: '04',
+                roman: 'IV',
+                title: 'Nature’s Sweetness',
+                subtitle: 'Raw Honeys & Wild Fruits',
+                tagline: 'Unprocessed cliff honeys and mountain sun-ripened orchard harvests bathed in pure Himalayan glacial breezes.',
+                badge: '100% Raw & Cold-Extracted',
+                icon: Droplets,
+                count: naturesSweetness.length
+              },
+              {
+                id: 'daily' as const,
+                num: '05',
+                roman: 'V',
+                title: 'Daily Nourishment',
+                subtitle: 'Pillars of Everyday Vitality',
+                tagline: 'Foundational Ayurvedic staples formulated to nurture restorative digestion, mental clarity, and sustained morning vigor.',
+                badge: 'Foundational Daily Vitality',
+                icon: Sun,
+                count: dailyNourishment.length
+              }
+            ];
+
+            const activeTab = showcaseTabs.find(t => t.id === activeShowcase) || showcaseTabs[0];
+            const ActiveIcon = activeTab.icon;
+
+            return (
+              <div className="mb-12">
+                {/* 5 Luxury Collection Selector Cards */}
+                <div className="flex lg:grid lg:grid-cols-5 gap-3.5 sm:gap-4 overflow-x-auto no-scrollbar pb-3 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0">
+                  {showcaseTabs.map(tab => {
+                    const IconComponent = tab.icon;
+                    const isActive = activeShowcase === tab.id;
+
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveShowcase(tab.id)}
+                        role="tab"
+                        aria-selected={isActive}
+                        className={`group relative flex-shrink-0 w-[245px] sm:w-[260px] lg:w-auto p-4 sm:p-5 rounded-2xl text-left transition-all duration-300 flex flex-col justify-between cursor-pointer select-none ${
+                          isActive
+                            ? 'bg-gradient-to-br from-[#122b17] via-[#1a3821] to-[#0d2012] text-[#FAF7F2] shadow-xl shadow-botanical/20 ring-1 ring-gold/60 border border-gold/50 -translate-y-1'
+                            : 'bg-white/90 hover:bg-white text-charcoal border border-[#E5DAC7] hover:border-gold/50 shadow-xs hover:shadow-lg hover:shadow-earth/5 hover:-translate-y-0.5'
+                        }`}
+                      >
+                        {/* Active Glowing Gold Accent Bar at Card Base */}
+                        {isActive && (
+                          <div className="absolute bottom-0 inset-x-4 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent rounded-full" />
+                        )}
+
+                        {/* Top Metadata Row: Roman Numeral Pill + Artisan Icon Bezel */}
+                        <div className="flex items-center justify-between mb-3 w-full">
+                          <span
+                            className={`text-[10px] font-mono tracking-widest uppercase px-2.5 py-0.5 rounded-full font-semibold transition-colors ${
+                              isActive
+                                ? 'bg-gold/20 text-gold border border-gold/40'
+                                : 'bg-[#F5EFE6] text-earth/80 border border-[#E8DFC8] group-hover:border-gold/40 group-hover:text-botanical'
+                            }`}
+                          >
+                            {tab.num}
+                          </span>
+
+                          <div
+                            className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${
+                              isActive
+                                ? 'bg-gold/20 text-gold border border-gold/40 shadow-inner'
+                                : 'bg-[#F7F2E8] text-botanical/75 group-hover:bg-gold/15 group-hover:text-gold border border-[#E8DFD0]'
+                            }`}
+                          >
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                        </div>
+
+                        {/* Middle Content: Title & Curated Subtitle */}
+                        <div className="space-y-1 my-1">
+                          <h3
+                            className={`font-serif text-base sm:text-lg font-medium leading-snug tracking-tight transition-colors ${
+                              isActive ? 'text-white' : 'text-botanical group-hover:text-earth'
+                            }`}
+                          >
+                            {tab.title}
+                          </h3>
+                          <p
+                            className={`text-[11px] leading-relaxed transition-colors line-clamp-2 ${
+                              isActive ? 'text-gold/90 font-medium' : 'text-[#7D7364] group-hover:text-charcoal'
+                            }`}
+                          >
+                            {tab.subtitle}
+                          </p>
+                        </div>
+
+                        {/* Bottom Status Row: Pulsing Indicator & Harvest Count */}
+                        <div
+                          className={`flex items-center justify-between pt-3 mt-3 border-t text-[10px] uppercase tracking-wider font-semibold ${
+                            isActive
+                              ? 'border-white/10 text-white/80'
+                              : 'border-[#F2EAE0] text-[#9E9484] group-hover:text-botanical'
+                          }`}
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                                isActive ? 'bg-gold animate-pulse' : 'bg-[#D1C5B2] group-hover:bg-gold'
+                              }`}
+                            />
+                            <span>{isActive ? 'Active Showcase' : `${tab.count} Masterpieces`}</span>
+                          </span>
+
+                          <ArrowRight
+                            className={`w-3 h-3 transition-transform duration-300 ${
+                              isActive
+                                ? 'text-gold translate-x-0.5'
+                                : 'text-[#B8AC99] opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5'
+                            }`}
+                          />
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Editorial Collection Spotlight Banner */}
+                <div className="mt-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-[#F4EDE2] via-[#FAF6F0] to-[#F4EDE2] border border-[#E5DAC7] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-start sm:items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-botanical text-gold flex items-center justify-center flex-shrink-0 shadow-sm border border-gold/30">
+                      <ActiveIcon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-earth font-bold px-2 py-0.5 rounded-md bg-[#EFE6D8] border border-[#DFCFC0]">
+                          {activeTab.badge}
+                        </span>
+                        <span className="text-xs font-serif font-semibold text-botanical">
+                          {activeTab.title}
+                        </span>
+                        <span className="text-[11px] text-charcoal-light">·</span>
+                        <span className="text-[11px] text-charcoal-light font-medium">
+                          {activeTab.count} Certified Pure Harvests
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-charcoal-light leading-relaxed">
+                        {activeTab.tagline}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-start md:self-auto flex-shrink-0">
+                    <button
+                      onClick={() => navigateTo('shop')}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-botanical hover:text-white bg-white hover:bg-botanical border border-[#DECFC0] hover:border-botanical transition-all shadow-2xs group"
+                    >
+                      <span>Explore Full Catalog</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Active Showcase Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
